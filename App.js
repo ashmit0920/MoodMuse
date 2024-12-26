@@ -1,8 +1,9 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, Button } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
@@ -12,7 +13,7 @@ function HomeScreen({ navigation }) {
       <View style={styles.content}>
         <Text style={styles.title}>Welcome to Your App</Text>
         <Text style={styles.subtitle}>
-          Start building something amazing!
+          Start writing your amazing journal!
         </Text>
         <TouchableOpacity
           style={styles.button}
@@ -26,9 +27,52 @@ function HomeScreen({ navigation }) {
 }
 
 function DetailsScreen() {
+  const [name, setName] = useState('');
+  const [isNameSaved, setIsNameSaved] = useState(false);
+
+  // Loading stored name when the component mounts
+  useEffect(() => {
+    const fetchName = async () => {
+      try {
+        const storedName = await AsyncStorage.getItem('userName');
+        if (storedName) {
+          setName(storedName);
+          setIsNameSaved(true);
+        }
+      } catch (error) {
+        console.error('Failed to load name:', error);
+      }
+    };
+    fetchName();
+  }, []);
+
+  // Save the name to AsyncStorage
+  const saveName = async () => {
+    try {
+      await AsyncStorage.setItem('userName', name);
+      setIsNameSaved(true);
+    } catch (error) {
+      console.error('Failed to save name:', error);
+    }
+  };
+
   return (
     <View style={styles.detailsContainer}>
-      <Text style={styles.detailsText}>Hello, World!</Text>
+      <Text style={styles.detailsText}>
+        {isNameSaved ? `Welcome back, ${name}!` : 'What should we call you?'}
+      </Text>
+      {!isNameSaved && (
+        <>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your name"
+            placeholderTextColor="#aaa"
+            value={name}
+            onChangeText={setName}
+          />
+          <Button title="Save" onPress={saveName} />
+        </>
+      )}
     </View>
   );
 }
@@ -95,5 +139,19 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  input: {
+    height: 60,
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 50,
+    paddingHorizontal: 10,
+    marginTop: 20,
+    fontSize: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
