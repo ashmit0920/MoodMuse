@@ -78,7 +78,7 @@ function DetailsScreen() {
   return (
     <View style={styles.detailsContainer}>
       {isNameSaved ? (
-        <>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Animated Welcome Back Section */}
         <Animated.View
           style={[
@@ -110,11 +110,24 @@ function DetailsScreen() {
           </ScrollView>
         </View>
 
+        {/* Progress Bar */}
+        <View style={styles.progressBarContainer}>
+          <Text style={styles.progressText}>Weekly Writing Progress: 75%</Text>
+          <View style={styles.progressBar}>
+            <LinearGradient
+              colors={['#79d7be', '#2575fc']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.progressFill, { width: '75%' }]} // Adjust width dynamically
+            />
+          </View>
+        </View>
+
         {/* Add New Entry Button */}
         <TouchableOpacity style={styles.addEntryButton}>
           <Text style={styles.addEntryButtonText}>Add New Entry</Text>
         </TouchableOpacity>
-      </>
+      </ScrollView>
       ) : (
         <>
           <Text style={styles.detailsText}>What should we call you?</Text>
@@ -195,6 +208,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
   animatedContainer: {
     position: 'absolute',
     top: '50%',
@@ -203,7 +220,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   quoteContainer: {
-    marginTop: 200, // Adjust position after animation
+    marginTop: 180, // Adjust position after animation
     paddingHorizontal: 20,
     alignItems: 'center',
   },
@@ -244,17 +261,17 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   entryText: {
-    color: '#fff',
+    color: '#0f0f0f',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   addEntryButton: {
     backgroundColor: '#FF7F50', // Coral color for contrast
-    borderRadius: 20,
+    borderRadius: 50,
     paddingVertical: 15,
     paddingHorizontal: 40,
-    marginTop: 30,
+    marginTop: 40,
     alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -280,5 +297,27 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  progressBarContainer: {
+    marginTop: 40,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  progressText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  progressBar: {
+    width: '100%',
+    height: 20,
+    backgroundColor: '#d3d3d3',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 10,
   },
 });
