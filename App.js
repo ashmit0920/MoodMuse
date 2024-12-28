@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Button, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from 'react-native';
+import NewEntryScreen from './screens/NewEntryScreen';
 
 const Stack = createStackNavigator();
 
@@ -38,7 +39,8 @@ function DetailsScreen() {
   ]);
 
   const dailyQuote = "“Start where you are. Use what you have. Do what you can.”"
-
+  const navigation = useNavigation();
+  
   // Loading stored name when the component mounts
   useEffect(() => {
     const fetchName = async () => {
@@ -124,7 +126,10 @@ function DetailsScreen() {
         </View>
 
         {/* Add New Entry Button */}
-        <TouchableOpacity style={styles.addEntryButton}>
+        <TouchableOpacity 
+          style={styles.addEntryButton} 
+          onPress={() => navigation.navigate('NewEntry')}
+        >
           <Text style={styles.addEntryButtonText}>Add New Entry</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -151,6 +156,11 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Details" component={DetailsScreen} />
+        <Stack.Screen
+          name="NewEntry"
+          component={NewEntryScreen}
+          options={{ title: 'New Entry', headerStyle: { backgroundColor: '#6a11cb' }, headerTintColor: '#fff'}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
