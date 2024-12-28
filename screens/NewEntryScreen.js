@@ -1,27 +1,41 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NewEntryScreen = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [entry, setEntry] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (title.trim() && entry.trim()) {
-      const newEntry = {
-        title,
-        text: entry,
-        timestamp: new Date().toLocaleString(),
-      };
-
-      // You can save this newEntry to AsyncStorage, database, or global state
-      console.log('New Entry Saved:', newEntry);
-
-      // Navigate back to the main screen
-      navigation.goBack();
-    } else {
-      alert('Please fill in both the title and the entry.');
-    }
-  };
+        const newEntry = {
+          id: Date.now().toString(), // Unique identifier
+          title,
+          text: entry,
+          timestamp: new Date().toLocaleString(),
+        };
+  
+        try {
+          // Fetch existing entries
+          const storedEntries = await AsyncStorage.getItem('journalEntries');
+          const entries = storedEntries ? JSON.parse(storedEntries) : [];
+  
+          // Add the new entry
+          entries.push(newEntry);
+  
+          // Save back to AsyncStorage
+          await AsyncStorage.setItem('journalEntries', JSON.stringify(entries));
+  
+          alert('Entry saved successfully!');
+          navigation.goBack();
+        } catch (error) {
+          console.error('Error saving entry:', error);
+          alert('Failed to save the entry. Please try again.');
+        }
+      } else {
+        alert('Please fill in both the title and the entry.');
+      }
+    };
 
   return (
     <View style={styles.container}>
@@ -59,6 +73,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 20,
+    marginTop: 60,
     textAlign: 'center',
   },
   input: {
@@ -69,13 +84,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textArea: {
-    height: 150,
+    height: 250,
     textAlignVertical: 'top',
   },
   submitButton: {
     backgroundColor: '#FF7F50',
     padding: 15,
-    borderRadius: 20,
+    borderRadius: 30,
     alignItems: 'center',
     marginTop: 20,
   },

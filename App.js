@@ -3,7 +3,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Button, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from 'react-native';
+import { Animated, Button, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, FlatList } from 'react-native';
 import NewEntryScreen from './screens/NewEntryScreen';
 
 const Stack = createStackNavigator();
@@ -31,16 +31,21 @@ function DetailsScreen() {
   const [name, setName] = useState('');
   const [isNameSaved, setIsNameSaved] = useState(false);
   const driftAnimation = useRef(new Animated.Value(0)).current;
-  const [pastEntries, setPastEntries] = useState([
-    'Day at the Beach',
-    'Goals for the Month',
-    'Thoughts on Happiness',
-    'Reflections on Life',
-  ]);
+  const [entries, setEntries] = useState([]);
 
   const dailyQuote = "“Start where you are. Use what you have. Do what you can.”"
   const navigation = useNavigation();
-  
+
+  // temporary function to clear async storage for testing
+  const clearAsyncStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      alert('All data cleared!');
+    } catch (error) {
+      console.error('Failed to clear AsyncStorage:', error);
+    }
+  };
+
   // Loading stored name when the component mounts
   useEffect(() => {
     const fetchName = async () => {
@@ -67,6 +72,7 @@ function DetailsScreen() {
     }
   };
 
+  // welcome message animation
   useEffect(() => {
     if (isNameSaved) {
       Animated.timing(driftAnimation, {
@@ -76,6 +82,22 @@ function DetailsScreen() {
       }).start();
     }
   }, [isNameSaved]);
+
+  // fetching past entries
+  useEffect(() => {
+    const fetchEntries = async () => {
+      try {
+        const storedEntries = await AsyncStorage.getItem('journalEntries');
+        if (storedEntries) {
+          setEntries(JSON.parse(storedEntries));
+        }
+      } catch (error) {
+        console.error('Error fetching entries:', error);
+      }
+    };
+
+    fetchEntries();
+  }, []);
 
   return (
     <View style={styles.detailsContainer}>
@@ -99,17 +121,26 @@ function DetailsScreen() {
         {/* Past Entries Section */}
         <View style={styles.pastEntriesContainer}>
           <Text style={styles.pastEntriesTitle}>Past Entries</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.pastEntriesScroll}
-          >
-            {pastEntries.map((entry, index) => (
-              <View key={index} style={styles.entryCard}>
-                <Text style={styles.entryText}>{entry}</Text>
-              </View>
-            ))}
-          </ScrollView>
+          {entries.length > 0 ? (
+            <FlatList
+              data={entries}
+              keyExtractor={(item) => item.id}
+              horizontal
+              style={{ height: 170 }}
+              renderItem={({ item }) => (
+                <View style={styles.entryCard}>
+                  <Text style={styles.entryTitle}>{item.title}</Text>
+                  <Text style={styles.entryDate}>{item.timestamp}</Text>
+                </View>
+              )}
+            />
+          ) : (
+            <View style={styles.noEntriesContainer}>
+              <Text style={styles.noEntriesText}>
+                You have no entries. Click on "Add New Entry" below to start writing!
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Progress Bar */}
@@ -132,19 +163,24 @@ function DetailsScreen() {
         >
           <Text style={styles.addEntryButtonText}>Add New Entry</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.addEntryButton} onPress={clearAsyncStorage}>
+          <Text style={styles.addEntryButtonText}>Clear Storage</Text>
+        </TouchableOpacity>
       </ScrollView>
       ) : (
-        <>
+        <View style={styles.askNameContainer}>
           <Text style={styles.detailsText}>What should we call you?</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter your name"
             placeholderTextColor="#aaa"
             value={name}
+            width="300"
             onChangeText={setName}
           />
           <Button title="Save" onPress={saveName} />
-        </>
+        </View>
       )}
     </View>
   );
@@ -206,6 +242,11 @@ const styles = StyleSheet.create({
     color: '#2575fc',
     fontWeight: 'bold',
   },
+  askNameContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   detailsContainer: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -213,7 +254,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6a11cb', // teal - #79D7BE
   },
   detailsText: {
-    fontSize: 28,
+    fontSize: 26,
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
@@ -255,27 +296,6 @@ const styles = StyleSheet.create({
   pastEntriesScroll: {
     flexDirection: 'row',
   },
-  entryCard: {
-    backgroundColor: '#40E0D0', // Teal color 
-    borderRadius: 10,
-    padding: 15,
-    marginHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 120,
-    height: 120,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  entryText: {
-    color: '#0f0f0f',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   addEntryButton: {
     backgroundColor: '#FF7F50', // Coral color for contrast
     borderRadius: 50,
@@ -295,18 +315,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   input: {
-    height: 60,
+    height: 50,
     width: '80%',
     backgroundColor: '#fff',
     borderRadius: 50,
     paddingHorizontal: 10,
     marginTop: 20,
+    marginBottom: 10,
     fontSize: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    textAlign: 'center',
   },
   progressBarContainer: {
     marginTop: 40,
@@ -329,5 +351,39 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     borderRadius: 10,
+  },
+  entryCard: {
+    backgroundColor: '#20b2aa',
+    padding: 10,
+    margin: 10,
+    borderRadius: 10,
+    width: 120,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  entryTitle: {
+    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 16,
+  },
+  entryDate: {
+    color: '#eee',
+    fontSize: 12,
+    marginTop: 5,
+  },
+  noEntriesContainer: {
+    height: 170,
+    borderRadius: 10,
+    backgroundColor: '#20b2aa',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    marginHorizontal: 20,
+  },
+  noEntriesText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+    paddingHorizontal: 10,
   },
 });
