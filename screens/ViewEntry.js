@@ -59,14 +59,14 @@ const ViewEntry = ({ route, navigation }) => {
       {/* Buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
-          style={styles.askMoodAIButton}
+          style={[styles.button, styles.askMoodAIButton]}
           onPress={() => setShowMenu(!showMenu)}
         >
           <Text style={styles.askMoodAIText}>Ask MoodAI</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.deleteButton}
+          style={[styles.button, styles.deleteButton]}
           onPress={() => deleteEntry}
         >
           <Text style={styles.deleteText}>Delete</Text>
@@ -132,68 +132,63 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   buttonRow: {
-    position: "absolute",
-    bottom: 25,
-    left: 20,
-    right: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 10,
+    alignItems: "center",
   },
-  deleteButton: {
-    backgroundColor: "ff6437",
+  button: {
+    flex: 1,
+    marginHorizontal: 5,
+    padding: 10,
     borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 5,
-    width: "50%",
+  },
+  deleteButton: {
+    borderWidth: 1,
+    shadowOpacity: 0,
   },
   deleteText: {
-    color: "#ff6437",
-    textAlign: "center",
+    color: "#ff4c4c",
     fontWeight: "bold",
     fontSize: 16,
   },
   askMoodAIButton: {
     backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-    width: "50%",
   },
   askMoodAIText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
-    textAlign: "center",
   },
   menu: {
     position: "absolute",
-    bottom: 80,
+    bottom: 100,
     left: 20,
     right: 20,
     backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
+    //padding: 15,
+    borderRadius: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 10,
+    //width: "50%",
   },
   menuOption: {
     fontSize: 16,
-    paddingVertical: 10,
+    paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     textAlign: "center",
-    color: "#333",
+    color: "#009200",
   },
 });
 
