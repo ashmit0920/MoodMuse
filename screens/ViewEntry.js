@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { analyzeJournal } from "../utils/geminiApi";
 
 const ViewEntry = ({ route, navigation }) => {
   const { id, title, text, timestamp } = route.params;
@@ -35,9 +36,14 @@ const ViewEntry = ({ route, navigation }) => {
   };
 
   // Ask MoodAI button options
-  const handleMenuOption = (option) => {
-    setShowMenu(false);
-    Alert.alert("Selected option", `You chose: ${option}`);
+  const handleAskMoodAI = async (entryText, selectedOption) => {
+    try {
+      const result = await analyzeJournal(entryText, selectedOption);
+      console.log("AI Response:", result);
+      // Handle the AI response (e.g., display in a modal or new screen)
+    } catch (error) {
+      Alert.alert("Error", `Failed to get AI analysis. ${error}`);
+    }
   };
 
   return (
@@ -78,19 +84,19 @@ const ViewEntry = ({ route, navigation }) => {
         <View style={styles.menu}>
           <Text
             style={styles.menuOption}
-            onPress={() => handleMenuOption("Analyze Mood")}
+            onPress={() => handleAskMoodAI("Analyze Mood")}
           >
             Analyze Mood
           </Text>
           <Text
             style={styles.menuOption}
-            onPress={() => handleMenuOption("Generate Reflection")}
+            onPress={() => handleAskMoodAI("Generate Reflection")}
           >
             Generate Reflection
           </Text>
           <Text
             style={styles.menuOption}
-            onPress={() => handleMenuOption("Give Writing Advice")}
+            onPress={() => handleAskMoodAI("Give Writing Advice")}
           >
             Give Writing Advice
           </Text>

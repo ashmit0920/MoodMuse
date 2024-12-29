@@ -2,6 +2,8 @@
 
 ideas.md
 .env
+app.json
+
 # dependencies
 node_modules/
 
