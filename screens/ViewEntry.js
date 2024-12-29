@@ -84,19 +84,19 @@ const ViewEntry = ({ route, navigation }) => {
         <View style={styles.menu}>
           <Text
             style={styles.menuOption}
-            onPress={() => handleAskMoodAI("Analyze Mood")}
+            onPress={() => handleAskMoodAI(text, "Analyze Mood")}
           >
             Analyze Mood
           </Text>
           <Text
             style={styles.menuOption}
-            onPress={() => handleAskMoodAI("Generate Reflection")}
+            onPress={() => handleAskMoodAI(text, "Generate Reflection")}
           >
             Generate Reflection
           </Text>
           <Text
             style={styles.menuOption}
-            onPress={() => handleAskMoodAI("Give Writing Advice")}
+            onPress={() => handleAskMoodAI(text, "Give Writing Advice")}
           >
             Give Writing Advice
           </Text>
