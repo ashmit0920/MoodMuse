@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,14 @@ import {
   Button,
   Alert,
   ScrollView,
+  Modal,
+  TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ViewEntry = ({ route, navigation }) => {
   const { id, title, text, timestamp } = route.params;
+  const [showMenu, setShowMenu] = useState(false);
 
   // Function to delete the current entry
   const deleteEntry = async () => {
@@ -31,6 +34,12 @@ const ViewEntry = ({ route, navigation }) => {
     }
   };
 
+  // Ask MoodAI button options
+  const handleMenuOption = (option) => {
+    setShowMenu(false);
+    Alert.alert("Selected option", `You chose: ${option}`);
+  };
+
   return (
     <View style={styles.container}>
       {/* Title */}
@@ -49,9 +58,44 @@ const ViewEntry = ({ route, navigation }) => {
 
       {/* Buttons */}
       <View style={styles.buttonRow}>
-        <Button title="Dummy Button" onPress={() => {}} />
-        <Button title="Delete" onPress={deleteEntry} color="#ff6347" />
+        <TouchableOpacity
+          style={styles.askMoodAIButton}
+          onPress={() => setShowMenu(!showMenu)}
+        >
+          <Text style={styles.askMoodAIText}>Ask MoodAI</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => deleteEntry}
+        >
+          <Text style={styles.deleteText}>Delete</Text>
+        </TouchableOpacity>
       </View>
+
+      {/* Menu Modal */}
+      {showMenu && (
+        <View style={styles.menu}>
+          <Text
+            style={styles.menuOption}
+            onPress={() => handleMenuOption("Analyze Mood")}
+          >
+            Analyze Mood
+          </Text>
+          <Text
+            style={styles.menuOption}
+            onPress={() => handleMenuOption("Generate Reflection")}
+          >
+            Generate Reflection
+          </Text>
+          <Text
+            style={styles.menuOption}
+            onPress={() => handleMenuOption("Give Writing Advice")}
+          >
+            Give Writing Advice
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -94,14 +138,62 @@ const styles = StyleSheet.create({
     right: 20,
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#fff",
     padding: 10,
-    borderRadius: 30,
+  },
+  deleteButton: {
+    backgroundColor: "ff6437",
+    borderRadius: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
+    width: "50%",
+  },
+  deleteText: {
+    color: "#ff6437",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  askMoodAIButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    width: "50%",
+  },
+  askMoodAIText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  menu: {
+    position: "absolute",
+    bottom: 80,
+    left: 20,
+    right: 20,
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 10,
+  },
+  menuOption: {
+    fontSize: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    textAlign: "center",
+    color: "#333",
   },
 });
 

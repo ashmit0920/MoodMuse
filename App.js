@@ -23,7 +23,7 @@ function HomeScreen({ navigation }) {
   return (
     <LinearGradient colors={["#6a11cb", "#2575fc"]} style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Welcome to Your App</Text>
+        <Text style={styles.title}>Welcome to MoodMuse</Text>
         <Text style={styles.subtitle}>Start writing your amazing journal!</Text>
         <TouchableOpacity
           style={styles.button}
