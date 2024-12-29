@@ -1,24 +1,33 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Button, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, FlatList } from 'react-native';
-import NewEntryScreen from './screens/NewEntryScreen';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  ScrollView,
+  FlatList,
+} from "react-native";
+import NewEntryScreen from "./screens/NewEntryScreen";
+import ViewEntry from "./screens/ViewEntry";
 
 const Stack = createStackNavigator();
 
 function HomeScreen({ navigation }) {
   return (
-    <LinearGradient colors={['#6a11cb', '#2575fc']} style={styles.container}>
+    <LinearGradient colors={["#6a11cb", "#2575fc"]} style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Welcome to Your App</Text>
-        <Text style={styles.subtitle}>
-          Start writing your amazing journal!
-        </Text>
+        <Text style={styles.subtitle}>Start writing your amazing journal!</Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Details')}
+          onPress={() => navigation.navigate("Details")}
         >
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
@@ -28,21 +37,22 @@ function HomeScreen({ navigation }) {
 }
 
 function DetailsScreen() {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [isNameSaved, setIsNameSaved] = useState(false);
   const driftAnimation = useRef(new Animated.Value(0)).current;
   const [entries, setEntries] = useState([]);
 
-  const dailyQuote = "“Start where you are. Use what you have. Do what you can.”"
+  const dailyQuote =
+    "“Start where you are. Use what you have. Do what you can.”";
   const navigation = useNavigation();
 
   // temporary function to clear async storage for testing
   const clearAsyncStorage = async () => {
     try {
       await AsyncStorage.clear();
-      alert('All data cleared!');
+      alert("All data cleared!");
     } catch (error) {
-      console.error('Failed to clear AsyncStorage:', error);
+      console.error("Failed to clear AsyncStorage:", error);
     }
   };
 
@@ -50,13 +60,13 @@ function DetailsScreen() {
   useEffect(() => {
     const fetchName = async () => {
       try {
-        const storedName = await AsyncStorage.getItem('userName');
+        const storedName = await AsyncStorage.getItem("userName");
         if (storedName) {
           setName(storedName);
           setIsNameSaved(true);
         }
       } catch (error) {
-        console.error('Failed to load name:', error);
+        console.error("Failed to load name:", error);
       }
     };
     fetchName();
@@ -65,10 +75,10 @@ function DetailsScreen() {
   // Save the name to AsyncStorage
   const saveName = async () => {
     try {
-      await AsyncStorage.setItem('userName', name);
+      await AsyncStorage.setItem("userName", name);
       setIsNameSaved(true);
     } catch (error) {
-      console.error('Failed to save name:', error);
+      console.error("Failed to save name:", error);
     }
   };
 
@@ -87,12 +97,12 @@ function DetailsScreen() {
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const storedEntries = await AsyncStorage.getItem('journalEntries');
+        const storedEntries = await AsyncStorage.getItem("journalEntries");
         if (storedEntries) {
           setEntries(JSON.parse(storedEntries));
         }
       } catch (error) {
-        console.error('Error fetching entries:', error);
+        console.error("Error fetching entries:", error);
       }
     };
 
@@ -102,72 +112,80 @@ function DetailsScreen() {
   return (
     <View style={styles.detailsContainer}>
       {isNameSaved ? (
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Animated Welcome Back Section */}
-        <Animated.View
-          style={[
-            styles.animatedContainer,
-            { transform: [{ translateY: driftAnimation }] },
-          ]}
-        >
-          <Text style={styles.detailsText}>Welcome back, {name}!</Text>
-        </Animated.View>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Animated Welcome Back Section */}
+          <Animated.View
+            style={[
+              styles.animatedContainer,
+              { transform: [{ translateY: driftAnimation }] },
+            ]}
+          >
+            <Text style={styles.detailsText}>Welcome back, {name}!</Text>
+          </Animated.View>
 
-        {/* Daily Quote Section */}
-        <View style={styles.quoteContainer}>
-          <Text style={styles.quoteText}>{dailyQuote}</Text>
-        </View>
-
-        {/* Past Entries Section */}
-        <View style={styles.pastEntriesContainer}>
-          <Text style={styles.pastEntriesTitle}>Past Entries</Text>
-          {entries.length > 0 ? (
-            <FlatList
-              data={entries}
-              keyExtractor={(item) => item.id}
-              horizontal
-              style={{ height: 170 }}
-              renderItem={({ item }) => (
-                <View style={styles.entryCard}>
-                  <Text style={styles.entryTitle}>{item.title}</Text>
-                  <Text style={styles.entryDate}>{item.timestamp}</Text>
-                </View>
-              )}
-            />
-          ) : (
-            <View style={styles.noEntriesContainer}>
-              <Text style={styles.noEntriesText}>
-                You have no entries. Click on "Add New Entry" below to start writing!
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Progress Bar */}
-        <View style={styles.progressBarContainer}>
-          <Text style={styles.progressText}>Weekly Writing Progress: 75%</Text>
-          <View style={styles.progressBar}>
-            <LinearGradient
-              colors={['#79d7be', '#2575fc']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.progressFill, { width: '75%' }]} // Adjust width dynamically
-            />
+          {/* Daily Quote Section */}
+          <View style={styles.quoteContainer}>
+            <Text style={styles.quoteText}>{dailyQuote}</Text>
           </View>
-        </View>
 
-        {/* Add New Entry Button */}
-        <TouchableOpacity 
-          style={styles.addEntryButton} 
-          onPress={() => navigation.navigate('NewEntry')}
-        >
-          <Text style={styles.addEntryButtonText}>Add New Entry</Text>
-        </TouchableOpacity>
+          {/* Past Entries Section */}
+          <View style={styles.pastEntriesContainer}>
+            <Text style={styles.pastEntriesTitle}>Past Entries</Text>
+            {entries.length > 0 ? (
+              <FlatList
+                data={entries.slice().reverse()}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ height: 170 }}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.entryCard}
+                    onPress={() => navigation.navigate("ViewEntry", item)}
+                  >
+                    <Text style={styles.entryTitle}>{item.title}</Text>
+                    <Text style={styles.entryDate}>{item.timestamp}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            ) : (
+              <View style={styles.noEntriesContainer}>
+                <Text style={styles.noEntriesText}>
+                  You have no entries. Click on "Add New Entry" below to start
+                  writing!
+                </Text>
+              </View>
+            )}
+          </View>
 
-        <TouchableOpacity style={styles.addEntryButton} onPress={clearAsyncStorage}>
+          {/* Progress Bar */}
+          <View style={styles.progressBarContainer}>
+            <Text style={styles.progressText}>
+              Weekly Writing Progress: 75%
+            </Text>
+            <View style={styles.progressBar}>
+              <LinearGradient
+                colors={["#79d7be", "#2575fc"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={[styles.progressFill, { width: "75%" }]} // Adjust width dynamically
+              />
+            </View>
+          </View>
+
+          {/* Add New Entry Button */}
+          <TouchableOpacity
+            style={styles.addEntryButton}
+            onPress={() => navigation.navigate("NewEntry")}
+          >
+            <Text style={styles.addEntryButtonText}>Add New Entry</Text>
+          </TouchableOpacity>
+
+          {/* Temporary button to clear async storage */}
+          {/* <TouchableOpacity style={styles.addEntryButton} onPress={clearAsyncStorage}>
           <Text style={styles.addEntryButtonText}>Clear Storage</Text>
-        </TouchableOpacity>
-      </ScrollView>
+        </TouchableOpacity> */}
+        </ScrollView>
       ) : (
         <View style={styles.askNameContainer}>
           <Text style={styles.detailsText}>What should we call you?</Text>
@@ -195,8 +213,13 @@ export default function App() {
         <Stack.Screen
           name="NewEntry"
           component={NewEntryScreen}
-          options={{ title: 'New Entry', headerStyle: { backgroundColor: '#6a11cb' }, headerTintColor: '#fff'}}
+          options={{
+            title: "New Entry",
+            headerStyle: { backgroundColor: "#6a11cb" },
+            headerTintColor: "#fff",
+          }}
         />
+        <Stack.Screen name="ViewEntry" component={ViewEntry} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -205,33 +228,33 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   content: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 20,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 18,
-    color: '#e0e0e0',
-    textAlign: 'center',
+    color: "#e0e0e0",
+    textAlign: "center",
     marginBottom: 30,
     lineHeight: 24,
   },
   button: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -239,47 +262,47 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#2575fc',
-    fontWeight: 'bold',
+    color: "#2575fc",
+    fontWeight: "bold",
   },
   askNameContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   detailsContainer: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: '#6a11cb', // teal - #79D7BE
+    justifyContent: "flex-start",
+    alignItems: "center",
+    backgroundColor: "#6a11cb",
   },
   detailsText: {
     fontSize: 26,
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 40,
   },
   animatedContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: '10%',
-    right: '10%',
-    alignItems: 'center',
+    position: "absolute",
+    top: "50%",
+    left: "10%",
+    right: "10%",
+    alignItems: "center",
   },
   quoteContainer: {
     marginTop: 180, // Adjust position after animation
     paddingHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   quoteText: {
     fontSize: 18,
-    color: '#fff',
-    fontStyle: 'italic',
-    textAlign: 'center',
+    color: "#fff",
+    fontStyle: "italic",
+    textAlign: "center",
     lineHeight: 30,
     marginBottom: 20,
   },
@@ -288,102 +311,102 @@ const styles = StyleSheet.create({
   },
   pastEntriesTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
     marginBottom: 20,
     paddingHorizontal: 20,
   },
   pastEntriesScroll: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   addEntryButton: {
-    backgroundColor: '#FF7F50', // Coral color for contrast
+    backgroundColor: "#FF7F50", // Coral color
     borderRadius: 50,
     paddingVertical: 15,
     paddingHorizontal: 40,
     marginTop: 40,
-    alignSelf: 'center',
-    shadowColor: '#000',
+    alignSelf: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   addEntryButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   input: {
     height: 50,
-    width: '80%',
-    backgroundColor: '#fff',
+    width: "80%",
+    backgroundColor: "#fff",
     borderRadius: 50,
     paddingHorizontal: 10,
     marginTop: 20,
     marginBottom: 10,
     fontSize: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    textAlign: 'center',
+    textAlign: "center",
   },
   progressBarContainer: {
     marginTop: 40,
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 20,
   },
   progressText: {
     fontSize: 16,
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     marginBottom: 10,
   },
   progressBar: {
-    width: '100%',
+    width: "100%",
     height: 20,
-    backgroundColor: '#d3d3d3',
+    backgroundColor: "#d3d3d3",
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressFill: {
-    height: '100%',
+    height: "100%",
     borderRadius: 10,
   },
   entryCard: {
-    backgroundColor: '#20b2aa',
+    backgroundColor: "#20b2aa",
     padding: 10,
     margin: 10,
     borderRadius: 10,
     width: 120,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   entryTitle: {
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
     fontSize: 16,
   },
   entryDate: {
-    color: '#eee',
+    color: "#eee",
     fontSize: 12,
     marginTop: 5,
   },
   noEntriesContainer: {
     height: 170,
     borderRadius: 10,
-    backgroundColor: '#20b2aa',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#20b2aa",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 10,
     marginHorizontal: 20,
   },
   noEntriesText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: 10,
   },
 });
