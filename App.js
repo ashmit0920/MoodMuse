@@ -182,9 +182,12 @@ function DetailsScreen() {
           </TouchableOpacity>
 
           {/* Temporary button to clear async storage */}
-          {/* <TouchableOpacity style={styles.addEntryButton} onPress={clearAsyncStorage}>
-          <Text style={styles.addEntryButtonText}>Clear Storage</Text>
-        </TouchableOpacity> */}
+          {/* <TouchableOpacity
+            style={styles.addEntryButton}
+            onPress={clearAsyncStorage}
+          >
+            <Text style={styles.addEntryButtonText}>Clear Storage</Text>
+          </TouchableOpacity> */}
         </ScrollView>
       ) : (
         <View style={styles.askNameContainer}>

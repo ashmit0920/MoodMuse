@@ -47,7 +47,7 @@ const ViewEntry = ({ route, navigation }) => {
       setShowResponseModal(true);
 
       const result = await analyzeJournal(entryText, selectedOption);
-      console.log("AI Response:", result);
+      //console.log("AI Response:", result);
 
       setAiResponse(result);
     } catch (error) {
