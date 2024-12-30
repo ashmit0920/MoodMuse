@@ -11,10 +11,15 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { analyzeJournal } from "../utils/geminiApi";
+import Markdown from "react-native-markdown-display";
+import LottieView from "lottie-react-native";
 
 const ViewEntry = ({ route, navigation }) => {
   const { id, title, text, timestamp } = route.params;
   const [showMenu, setShowMenu] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [aiResponse, setAiResponse] = useState("");
+  const [showResponseModal, setShowResponseModal] = useState(false);
 
   // Function to delete the current entry
   const deleteEntry = async () => {
@@ -38,11 +43,17 @@ const ViewEntry = ({ route, navigation }) => {
   // Ask MoodAI button options
   const handleAskMoodAI = async (entryText, selectedOption) => {
     try {
+      setIsLoading(true);
+      setShowResponseModal(true);
+
       const result = await analyzeJournal(entryText, selectedOption);
       console.log("AI Response:", result);
-      // Handle the AI response (e.g., display in a modal or new screen)
+
+      setAiResponse(result);
     } catch (error) {
       Alert.alert("Error", `Failed to get AI analysis. ${error}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,6 +113,45 @@ const ViewEntry = ({ route, navigation }) => {
           </Text>
         </View>
       )}
+
+      {/* AI Response Modal */}
+      <Modal
+        transparent
+        visible={showResponseModal}
+        animationType="fade"
+        onRequestClose={() => setShowResponseModal(false)}
+      >
+        {isLoading ? (
+          <View style={styles.modalContainer}>
+            <View style={styles.lottieContainer}>
+              <Text style={styles.moodAIheading}>MoodAI is reading...</Text>
+              <LottieView
+                source={require("../assets/loading-animation.json")}
+                autoPlay
+                loop
+                style={{ width: 150, height: 150 }}
+              />
+            </View>
+          </View>
+        ) : (
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.moodAIheading}>MoodAI Response</Text>
+              <ScrollView>
+                <Markdown style={styles.markdownStyle}>{aiResponse}</Markdown>
+              </ScrollView>
+              {!isLoading && (
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setShowResponseModal(false)}
+                >
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        )}
+      </Modal>
     </View>
   );
 };
@@ -195,6 +245,66 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ddd",
     textAlign: "center",
     color: "#009200",
+  },
+
+  // AI Response modal
+  lottieContainer: {
+    width: "80%",
+    height: 250, // Adjust the height for the Lottie animation
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5, // Adds a shadow on Android
+    shadowColor: "#000", // Adds a shadow on iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+  },
+  modalContent: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: "#6200ee",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignSelf: "center",
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  markdownStyle: {
+    body: { fontSize: 16, lineHeight: 22 },
+    heading1: { fontSize: 24, marginBottom: 10 },
+    heading2: { fontSize: 20, marginBottom: 8 },
+    bullet: { marginBottom: 5, textAlign: "justified" },
+    bold: { fontWeight: "bold" },
+  },
+  moodAIheading: {
+    fontWeight: "bold",
+    fontSize: 22,
+    textAlign: "center",
+    color: "#6200ee",
+    marginBottom: 12,
   },
 });
 

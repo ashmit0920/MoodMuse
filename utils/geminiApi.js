@@ -13,7 +13,7 @@ export const analyzeJournal = async (journalText, selectedOption) => {
           {
             parts: [
               {
-                text: `Read this journal entry, based on it I want you to - ${selectedOption}. Remember to not write any extra descriptive lines in the response, STRICTLY WRITE ONLY WHAT IS ASKED. The journal is: \n${journalText}`,
+                text: `Read this journal entry, based on it I want you to - ${selectedOption}. Remember to not write any extra descriptive lines in the response, STRICTLY WRITE ONLY WHAT IS ASKED and use bullet points. The journal is: \n${journalText}`,
               },
             ],
           },
