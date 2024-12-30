@@ -5,6 +5,20 @@ const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/
 
 export const analyzeJournal = async (journalText, selectedOption) => {
   try {
+    var prompt;
+    switch (selectedOption) {
+      case "Analyze Mood":
+        prompt = `Read this journal entry and analyze its mood. Remember to not write any extra descriptive lines in the response, write the mood as a heading and explain each mood in 1-2 lines. The journal is: \n${journalText}`;
+        break;
+
+      case "Generate Reflection":
+        prompt = `Read this journal entry and generate reflections on it. Use second person pronouns. Remember to not write any extra descriptive lines in the response, and use separate lines for each point with space between each point. At max write 8 points if required, otherwise just write as many as sufficient (below 8). The journal is: \n${journalText}`;
+        break;
+
+      case "Give Writing Advice":
+        prompt = `Read this journal entry and give writing advice based on it. Use second person pronouns. Remember to not write any introduction or conclusion lines in the response, only write the advice and use separate paragraphs with a short heading for each paragraph. Keep it within 100-120 words. The journal is: \n${journalText}`;
+    }
+
     const response = await axios({
       url: GEMINI_API_URL,
       method: "post",
@@ -13,7 +27,7 @@ export const analyzeJournal = async (journalText, selectedOption) => {
           {
             parts: [
               {
-                text: `Read this journal entry, based on it I want you to - ${selectedOption}. Remember to not write any extra descriptive lines in the response, STRICTLY WRITE ONLY WHAT IS ASKED and use bullet points. The journal is: \n${journalText}`,
+                text: prompt,
               },
             ],
           },

@@ -136,7 +136,7 @@ const ViewEntry = ({ route, navigation }) => {
         ) : (
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text style={styles.moodAIheading}>MoodAI Response</Text>
+              <Text style={styles.moodAIheading}>MoodAI's Thoughts</Text>
               <ScrollView>
                 <Markdown style={styles.markdownStyle}>{aiResponse}</Markdown>
               </ScrollView>
@@ -293,9 +293,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   markdownStyle: {
-    body: { fontSize: 16, lineHeight: 22 },
-    heading1: { fontSize: 24, marginBottom: 10 },
-    heading2: { fontSize: 20, marginBottom: 8 },
+    body: { fontSize: 16, lineHeight: 22, textAlign: "justified" },
+    heading1: { fontSize: 24, marginTop: 10, fontWeight: "bold" },
+    heading2: { fontSize: 20, marginTop: 8, fontWeight: "bold" },
+    heading3: { fontSize: 18, marginTop: 8, fontWeight: "bold" },
     bullet: { marginBottom: 5, textAlign: "justified" },
     bold: { fontWeight: "bold" },
   },
